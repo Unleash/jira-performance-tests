@@ -71,7 +71,6 @@ def login(webdriver, datasets):
     measure()
     PopupManager(webdriver).dismiss_default_popup()
 
-
 def view_issue(webdriver, datasets):
     issue_page = Issue(webdriver, issue_key=datasets['issue_key'])
 
