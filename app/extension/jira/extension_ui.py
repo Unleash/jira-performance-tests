@@ -6,9 +6,7 @@ from selenium_ui.base_page import BasePage
 from selenium_ui.conftest import print_timing
 from selenium_ui.jira.pages.pages import Login, Issue
 from util.conf import JIRA_SETTINGS
-
 import requests
-
 from flask import Flask, jsonify
 from threading import Thread
 from uuid import uuid4
@@ -105,40 +103,24 @@ class FauxUnleashServer(Thread):
 
 def app_specific_action(webdriver, datasets):
 
+    unleashed_issues = ["SCRUM-1", "SCRUM-1"]
     project_name = "TestProject"
     feature_name = "Toggle-" + str(uuid4())
+    port = 4242
 
-    page = BasePage(webdriver)
-    unleash_server = FauxUnleashServer(port=4242)
+    unleash_server = FauxUnleashServer(port=port)
     unleash_server.start()
     unleash_server.add_str_response(f"/api/admin/projects/{project_name}/features{feature_name}", feature_response)
     unleash_server.add_str_response(f"/api/admin/projects/{project_name}/features/{feature_name}/environments/development/strategies", create_env_response)
     unleash_server.add_str_response(f"/api/admin/projects/{project_name}/features/{feature_name}/environments/production/strategies", create_env_response)
 
-    if datasets['custom_issues']:
-        issue_page = Issue(webdriver, issue_id=datasets['custom_issue_key'])
-        issue_page.go_to()
-        issue_page.wait_for_page_loaded()
+    page = BasePage(webdriver)
+
+    issue_page = Issue(webdriver, issue_key=random.choice(unleashed_issues))
 
     @print_timing("selenium_app_add_toggle")
     def measure():
-        page.wait_until_visible((By.ID, "unleash-toggle-link"))
-        create_toggle_link = webdriver.find_elements(By.ID, "unleash-toggle-link")[0]
-        create_toggle_link.click()
-
-        existing_feature_toggle = webdriver.find_elements(By.ID, "unleash-switch")[0]
-        existing_feature_toggle.click()
-
-        toggle_name_input = webdriver.find_elements(By.ID, "unleashNewToggleName")[0]
-        toggle_name_input.send_keys(feature_name)
-
-        toggle_description = webdriver.find_elements(By.ID, "unleashToggleDescription")[0]
-        toggle_description.send_keys(feature_name)
-
-        save_toggle_button = webdriver.find_elements(By.ID, "unleash-toggle-submit")[0]
-        save_toggle_button.click()
-
-
+        issue_page.go_to()
         page.wait_until_visible((By.CLASS_NAME, "toggle-status-container"))
 
     measure()
