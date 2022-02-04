@@ -9,6 +9,10 @@ from util.conf import JIRA_SETTINGS
 from flask import Flask, jsonify
 from threading import Thread
 from uuid import uuid4
+import sys
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 
 def app_specific_action(webdriver, datasets):
@@ -16,6 +20,7 @@ def app_specific_action(webdriver, datasets):
     unleashed_issues = ["AANES-417", "AANES-348", "AANES-271"]
 
     page = BasePage(webdriver)
+    eprint("Preloading the issue test")
 
     issue_page = Issue(webdriver, issue_key=random.choice(unleashed_issues))
 
