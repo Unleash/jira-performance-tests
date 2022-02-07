@@ -17,7 +17,7 @@ def eprint(*args, **kwargs):
 
 def app_specific_action(webdriver, datasets):
 
-    unleashed_issues = ["AANES-417", "AANES-348", "AANES-271"]
+    unleashed_issues = ["AAETAA-826", "AAETAA-627", "AAETAA-363"]
 
     page = BasePage(webdriver)
     eprint("Preloading the issue test")
